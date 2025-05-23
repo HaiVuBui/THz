@@ -1,0 +1,36 @@
+# 🐍 Python build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.eggs/
+*.pyo
+
+# 📦 Virtual environments & packaging
+.env/
+.pixi/
+.runs/
+typings/
+*.venv/
+*.tox/
+
+# 📂 Editor/IDE configs
+*.sublime-project
+*.sublime-workspace
+.vscode/
+
+# 🔬 Project-specific
+.Thz.sublime-project
+
+# 🧪 Test/output/log artifacts
+*.log
+*.coverage
+*.mypy_cache/
+*.pytest_cache/
+coverage.xml
+htmlcov/
+
+# 🚫 OS-specific files
+.DS_Store
+Thumbs.db
+
+src/test.py
