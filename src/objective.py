@@ -65,7 +65,20 @@ class Objective:
         return self.N * self.K * 2 + self.N + self.F
 
     def state_shape(self):
-        return 0
+        return self.F * self.M * 2 + self.K * self.F * 2 + self.N * self.K * 2 + self.N + self.F
+ 
+    
+    def reset_state(self):
+        F = self.F
+        M = self.M
+        K = self.K
+        self.G = torch.randn(F, M, dtype=torch.cfloat)
+        self.H_T = torch.randn(K, F, dtype=torch.cfloat)
+        return torch.concatenate([torch.abs(self.G).reshape(-1),
+                                  torch.angle(self.G).reshape(-1),
+                                  torch.abs(self.H_T).reshape(-1),
+                                  torch.angle(self.H_T).reshape(-1)]) 
+
 
 
 def make_obj(M: int = 4, N: int = 2, K: int = 2, F: int = 3):
@@ -82,7 +95,7 @@ def make_obj(M: int = 4, N: int = 2, K: int = 2, F: int = 3):
     S_num = 4
     S = [math.pi * 2 * i / S_num for i in range(S_num)]
 
-    # Create objective instance
+    # Create ojective instance
     objective = Objective(
         M=M, N=N, D=D, K=K, F=F, G=G, H_T=H_T, sigma2=sigma2, gamma=gamma, S=S
     )
@@ -121,6 +134,12 @@ def main():
     SINR_k = objective.compute_sINR_k(
         H_T=objective.H_T, Theta=Theta, G=objective.G, V=V, W=W, k=0
     )
+    
+    T = torch.rand(objective.state_shape())
+    ac = objective.reset_state()
+    print(ac.shape)
+    print(T[: F * M *2 + F * K * 2 ].shape)
+    T[: F * M *2 + F * K * 2 ] = ac 
 
     return
     print(f"Objective value: {obj_value}")
@@ -135,7 +154,6 @@ def main():
     print(W_polar)
     print(V_polar)
     print(diag_polar)
-
 
 if __name__ == "__main__":
     main()

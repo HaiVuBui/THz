@@ -17,7 +17,7 @@ from torch.utils.tensorboard.writer import SummaryWriter
 from env import CustomEnv
 from objective import Objective, make_obj
 
-objective = make_obj(M=24, N=3 ,K=5, F=5)
+objective = make_obj(M=12, N=3 ,K=3, F=4)
 
 
 @dataclass
@@ -48,7 +48,7 @@ class Args:
     """the environment id of the Atari game"""
     objective: Objective = objective
     """custom objective function"""
-    total_timesteps: int = 10000000
+    total_timesteps: int = 1000_000
     """total timesteps of the experiments"""
     learning_rate: float = 3e-4
     """the learning rate of the optimizer"""

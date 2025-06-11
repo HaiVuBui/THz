@@ -51,6 +51,10 @@ class CustomEnv(gym.Env):  # observation and action
         self.steps_taken = 0
         self.best_loss = float("inf")
         self.best_params = None
+        F = self.objective.F
+        M = self.objective.M
+        K = self.objective.K
+        self.state[- (F * M * 2 + K * F * 2) :] = self.objective.reset_state()
 
         # Return initial observation and info
         return self.state, {}
@@ -60,9 +64,6 @@ class CustomEnv(gym.Env):  # observation and action
         Take a step in the environment using the given action.
         Returns next_state, reward, terminated, truncated, info
         """
-        # Ensure action is within bounds
-        action = np.clip(action, self.action_space.low, self.action_space.high)
-
         # compute parameters
         M = self.objective.M
         N = self.objective.N
@@ -70,6 +71,11 @@ class CustomEnv(gym.Env):  # observation and action
         D = self.objective.D
         F = self.objective.F
         S = self.objective.S
+
+        # Ensure action is within bounds
+        # self.state[F * M * 2 + K * M * 2:] = action
+        action = np.clip(action, self.action_space.low, self.action_space.high)
+
 
         W_module = torch.from_numpy(action[: N * K])
         W_polar = torch.from_numpy(action[N * K : 2 * N * K])
@@ -99,10 +105,7 @@ class CustomEnv(gym.Env):  # observation and action
         # Increment step counter
         self.steps_taken += 1
 
-        # Calculate reward as negative loss minus constraint penalty (maximize reward = minimize loss)
-        # SINR_k = self.objective.compute_sINR_k(
-        #     H_T=self.objective.H_T, self.Theta=Theta, G=objective.G, V=V, W=W, k=k
-        # )
+            
         reward: float = 1 / current_loss if is_feasible else 0
 
         # Track best solution
